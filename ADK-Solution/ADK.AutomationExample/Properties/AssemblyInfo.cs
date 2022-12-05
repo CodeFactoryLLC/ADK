@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CodeFactory.ADK")]
+[assembly: AssemblyTitle("ADK.AutomationExample")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CodeFactory.ADK")]
+[assembly: AssemblyProduct("ADK.AutomationExample")]
 [assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("5c6df311-f7b6-4a2c-b84a-f1a28da560b6")]
+[assembly: Guid("cfcf098b-4cf8-420c-8f40-82e5857d988e")]
 
 // Version information for an assembly consists of the following four values:
 //

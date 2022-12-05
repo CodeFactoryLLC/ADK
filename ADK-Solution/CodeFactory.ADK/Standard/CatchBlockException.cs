@@ -2,15 +2,15 @@
 using Microsoft.Extensions.Logging;
 
 
-namespace CodeFactory.ADK.NDF
+namespace CodeFactory.ADK.Standard
 {
-    public class CatchBlockPassManagedException:CodeBlockSyntaxBase
+    public class CatchBlockException:CodeBlockSyntaxBase
     {
         /// <summary>
         /// Implementation of a catch block for the <see cref="Exception"/> type. That will throw a UnhandledException.
         /// </summary>
         /// <param name="loggingFormatter">Optional the log formatter to use with the code block.</param>
-        public CatchBlockPassManagedException(ILoggingFormatter loggingFormatter = null) : base("NDFCatchBlockPassManagedException",CodeBlockType.CatchStatement,loggingFormatter)
+        public CatchBlockException(ILoggingFormatter loggingFormatter = null) : base("NDFCatchBlockException",CodeBlockType.CatchStatement,loggingFormatter)
         {
             //Intentionally blank
         }
@@ -24,11 +24,12 @@ namespace CodeFactory.ADK.NDF
         {
             SourceFormatter formatter = new SourceFormatter();
 
-            formatter.AppendCodeLine(0,"catch (ManagedException)");
+            formatter.AppendCodeLine(0,"catch (Exception unhandledException)");
             formatter.AppendCodeLine(0,"{");
             if (LoggingFormatter != null)
             {
-                formatter.AppendCodeLine(1, LoggingFormatter.InjectExitLoggingSyntax(LogLevel.Information));
+                formatter.AppendCodeLine(1, LoggingFormatter.InjectLoggingSyntax(LogLevel.Error, "The following unhandled exception occurred, see exception details. Throwing the original exception.",false,"unhandledException"));
+                formatter.AppendCodeLine(1, LoggingFormatter.InjectExitLoggingSyntax(LogLevel.Error,memberName));
             }
             formatter.AppendCodeLine(1,"throw;");
             formatter.AppendCodeLine(0,"}");

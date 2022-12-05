@@ -30,7 +30,7 @@ namespace CodeFactory.ADK.NDF
             //bounds check to make sure we have parameter data.
             if (checkParameter == null) return (false, null);
 
-            if(!(checkParameter.ParameterType.Namespace == "System" & checkParameter.ParameterType.Name == "string")) return (false, null);
+            if(!(checkParameter.ParameterType.Namespace == "System" & checkParameter.ParameterType.Name == "String")) return (false, null);
 
             if(checkParameter.HasDefaultValue) return (false, null);
 
@@ -40,9 +40,9 @@ namespace CodeFactory.ADK.NDF
             formatter.AppendCodeLine(0,"{");
             if (LoggingFormatter != null)
             {
-                formatter.AppendCodeLine(1,LoggingFormatter.InjectLoggingSyntax(LogLevel.Error, 
-                    string.Format("$\"The parameter {nameof({0})} was not provided. Will raise an argument exception\"", checkParameter.Name),null));
-                formatter.AppendCodeLine(1, LoggingFormatter.InjectExitLoggingSyntax(LogLevel.Error));
+                var errorMessage = $"$\"The parameter {{nameof({checkParameter.Name})}} was not provided. Will raise an argument exception\"";
+                formatter.AppendCodeLine(1,LoggingFormatter.InjectLoggingSyntax(LogLevel.Error, errorMessage,true));
+                formatter.AppendCodeLine(1, LoggingFormatter.InjectExitLoggingSyntax(LogLevel.Error,sourceMethod.Name));
             }
             formatter.AppendCodeLine(1,$"throw new ValidationException(nameof({checkParameter.Name}));");
             formatter.AppendCodeLine(0,"}");

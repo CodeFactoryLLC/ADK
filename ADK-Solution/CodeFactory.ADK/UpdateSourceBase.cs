@@ -76,7 +76,47 @@ namespace CodeFactory.ADK
         /// <exception cref="ArgumentNullException">Thrown if the namespace manager is null.</exception>
         public void UpdateNamespaceManager(NamespaceManager namespaceManager)
         {
-            _namespaceManager = _namespaceManager ?? throw new ArgumentNullException(nameof(namespaceManager));
+            _namespaceManager = namespaceManager ?? throw new ArgumentNullException(nameof(namespaceManager));
+        }
+
+        /// <summary>
+        /// Loads a new instance of a <see cref="IUpdateSource{TContainerType}.NamespaceManager"/> from the current source and assigns it to the <see cref="IUpdateSource{TContainerType}.NamespaceManager"/> property.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown if either the source or container is null.</exception>
+        public void LoadNamespaceManager()
+        {
+            if (_source == null) throw new ArgumentNullException(nameof(Source));
+
+            if(!_source.NamespaceReferences.Any()) return;
+
+            if(_container == null) throw new ArgumentNullException(nameof(Container));
+
+            var updatedNamespaceManager = new NamespaceManager(_source.NamespaceReferences, _container.Namespace);
+
+            UpdateNamespaceManager(updatedNamespaceManager);
+        }
+
+        /// <summary>
+        /// Creates a new using statement in the source if the using statement does not exist. It will also reload the namespace manager and update it.
+        /// </summary>
+        /// <param name="nameSpace">Namespace to add to the source file.</param>
+        /// <param name="alias">Optional parameter to assign a alias to the using statement.</param>
+        /// <exception cref="ArgumentNullException">Thrown if the source is null.</exception>
+        public async Task UsingStatementAddAsync(string nameSpace, string alias = null)
+        {
+            if (_source == null) throw new ArgumentNullException(nameof(Source));
+
+            if(string.IsNullOrEmpty(nameSpace)) return;
+
+            var updatedSource = await Source.AddUsingStatementAsync(nameSpace, alias);
+
+            if (updatedSource == null) throw new ArgumentNullException(nameof(Source));
+
+            var updatedContainer = updatedSource.GetModel<TContainerType>(ContainerPath);
+
+            UpdateSources(updatedSource,updatedContainer);
+
+            LoadNamespaceManager();
         }
 
         /// <summary>
@@ -208,9 +248,9 @@ namespace CodeFactory.ADK
             CsSource updatedSource = null;
 
             var sourceDoc = source.SourceDocument;
-            if (source.NamespaceReferences.Any(n => n.SourceDocument == sourceDoc))
+            if (source.NamespaceReferences.Any(n => n.SourceDocument == sourceDoc & n.LoadedFromSource))
             {
-                var usingStatement = source.NamespaceReferences.First(n => n.SourceDocument == sourceDoc);
+                var usingStatement = source.NamespaceReferences.First(n => n.SourceDocument == sourceDoc & n.LoadedFromSource );
 
                 updatedSource = await usingStatement.AddBeforeAsync(syntax);
             }
@@ -240,9 +280,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (source.NamespaceReferences.Any(n => n.SourceDocument == sourceDoc))
+            if (source.NamespaceReferences.Any(n => n.SourceDocument == sourceDoc & n.LoadedFromSource))
             {
-                var usingStatement = source.NamespaceReferences.Last(n => n.SourceDocument == sourceDoc);
+                var usingStatement = source.NamespaceReferences.Last(n => n.SourceDocument == sourceDoc & n.LoadedFromSource);
 
                 updatedSource = await usingStatement.AddAfterAsync(syntax);
             }
@@ -271,9 +311,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.Properties.Any(p => p.ModelSourceFile == sourceDoc))
+            if (container.Properties.Any(p => p.ModelSourceFile == sourceDoc & p.LoadedFromSource))
             {
-                var propertyData  = container.Properties.First(p => p.ModelSourceFile == sourceDoc);
+                var propertyData  = container.Properties.First(p => p.ModelSourceFile == sourceDoc & p.LoadedFromSource);
 
                 var updatedSource = await propertyData.AddBeforeAsync(syntax);
 
@@ -303,9 +343,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.Properties.Any(p => p.ModelSourceFile == sourceDoc))
+            if (container.Properties.Any(p => p.ModelSourceFile == sourceDoc & p.LoadedFromSource))
             {
-                var propertyData  = container.Properties.Last(p => p.ModelSourceFile == sourceDoc);
+                var propertyData  = container.Properties.Last(p => p.ModelSourceFile == sourceDoc & p.LoadedFromSource);
 
                 var updatedSource = await propertyData.AddAfterAsync(syntax);
 
@@ -334,9 +374,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.Events.Any(e => e.ModelSourceFile == sourceDoc))
+            if (container.Events.Any(e => e.ModelSourceFile == sourceDoc & e.LoadedFromSource))
             {
-                var eventData  = container.Events.First(e => e.ModelSourceFile == sourceDoc);
+                var eventData  = container.Events.First(e => e.ModelSourceFile == sourceDoc & e.LoadedFromSource);
 
                 var updatedSource = await eventData.AddBeforeAsync(syntax);
 
@@ -365,9 +405,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.Events.Any(e => e.ModelSourceFile == sourceDoc))
+            if (container.Events.Any(e => e.ModelSourceFile == sourceDoc & e.LoadedFromSource))
             {
-                var eventData  = container.Events.Last(e => e.ModelSourceFile == sourceDoc);
+                var eventData  = container.Events.Last(e => e.ModelSourceFile == sourceDoc & e.LoadedFromSource);
 
                 var updatedSource = await eventData.AddAfterAsync(syntax);
 
@@ -396,9 +436,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.Methods.Any(m => m.ModelSourceFile == sourceDoc))
+            if (container.Methods.Any(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource))
             {
-                var methodData  = container.Methods.First(m => m.ModelSourceFile == sourceDoc);
+                var methodData  = container.Methods.First(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource);
 
                 var updatedSource = await methodData.AddBeforeAsync(syntax);
 
@@ -427,9 +467,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.Methods.Any(m => m.ModelSourceFile == sourceDoc))
+            if (container.Methods.Any(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource))
             {
-                var methodData  = container.Methods.Last(m => m.ModelSourceFile == sourceDoc);
+                var methodData  = container.Methods.Last(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource);
 
                 var updatedSource = await methodData.AddAfterAsync(syntax);
 
@@ -560,9 +600,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.NestedEnums.Any(m => m.ModelSourceFile == sourceDoc))
+            if (container.NestedEnums.Any(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource))
             {
-                var enumData  = container.NestedEnums.First(m => m.ModelSourceFile == sourceDoc);
+                var enumData  = container.NestedEnums.First(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource);
 
                 var updatedSource = await enumData.AddBeforeAsync(syntax);
 
@@ -591,9 +631,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.NestedEnums.Any(m => m.ModelSourceFile == sourceDoc))
+            if (container.NestedEnums.Any(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource))
             {
-                var enumData  = container.NestedEnums.Last(m => m.ModelSourceFile == sourceDoc);
+                var enumData  = container.NestedEnums.Last(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource);
 
                 var updatedSource = await enumData.AddAfterAsync(syntax);
 
@@ -670,9 +710,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.NestedInterfaces.Any(m => m.ModelSourceFile == sourceDoc))
+            if (container.NestedInterfaces.Any(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource))
             {
-                var interfaceData  = container.NestedInterfaces.First(m => m.ModelSourceFile == sourceDoc);
+                var interfaceData  = container.NestedInterfaces.First(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource);
 
                 var updatedSource = await interfaceData.AddBeforeAsync(syntax);
 
@@ -701,9 +741,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.NestedInterfaces.Any(m => m.ModelSourceFile == sourceDoc))
+            if (container.NestedInterfaces.Any(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource))
             {
-                var interfaceData  = container.NestedInterfaces.Last(m => m.ModelSourceFile == sourceDoc);
+                var interfaceData  = container.NestedInterfaces.Last(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource);
 
                 var updatedSource = await interfaceData.AddAfterAsync(syntax);
 
@@ -780,9 +820,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.NestedStructures.Any(m => m.ModelSourceFile == sourceDoc))
+            if (container.NestedStructures.Any(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource))
             {
-                var structData  = container.NestedStructures.First(m => m.ModelSourceFile == sourceDoc);
+                var structData  = container.NestedStructures.First(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource);
 
                 var updatedSource = await structData.AddBeforeAsync(syntax);
 
@@ -811,9 +851,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.NestedStructures.Any(m => m.ModelSourceFile == sourceDoc))
+            if (container.NestedStructures.Any(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource))
             {
-                var structData  = container.NestedStructures.Last(m => m.ModelSourceFile == sourceDoc);
+                var structData  = container.NestedStructures.Last(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource);
 
                 var updatedSource = await structData.AddAfterAsync(syntax);
 
@@ -890,9 +930,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.NestedClasses.Any(m => m.ModelSourceFile == sourceDoc))
+            if (container.NestedClasses.Any(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource))
             {
-                var classData  = container.NestedClasses.First(m => m.ModelSourceFile == sourceDoc);
+                var classData  = container.NestedClasses.First(m => m.ModelSourceFile == sourceDoc & m.LoadedFromSource);
 
                 var updatedSource = await classData.AddBeforeAsync(syntax);
 

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CodeFactory.ADK.NDF
 {
-    public class NDFLogger:BaseLoggingFormatter
+    public class NDFLogger:BaseLoggingFormatter,ILoggingFormatter
     {
         /// <summary>
         /// Constructor for the logging implementation.
@@ -22,15 +22,22 @@ namespace CodeFactory.ADK.NDF
         /// </summary>
         /// <param name="level">The logging level for the logger syntax.</param>
         /// <param name="message">the target message for logging.</param>
+        /// <param name="isFormattedMessage">optional parameter that determines if the string uses a $ formatted string for the message with double quotes in the formatted output.</param>
         /// <param name="exceptionSyntax">Optional parameter to pass the exception field name to be included with the logging.</param>
         /// <returns>The formatted logging syntax to be injected. If no message is provided will return null.</returns>
-        public new string InjectLoggingSyntax(LogLevel level, string message, string exceptionSyntax = null)
+        public new string InjectLoggingSyntax(LogLevel level, string message, bool isFormattedMessage = false, string exceptionSyntax = null)
         {
             if (string.IsNullOrEmpty(message)) return null;
 
-            return string.IsNullOrEmpty(exceptionSyntax)
+            string loggingSyntax = null;
+            if(!isFormattedMessage) loggingSyntax =  string.IsNullOrEmpty(exceptionSyntax)
                 ? $"{FieldName}.{LogMethodName(level)}(\"{message}\");"
-                : $"{FieldName}.{LogMethodName(level)}(\"{message}\",{exceptionSyntax});";
+                : $"{FieldName}.{LogMethodName(level)}(\"{message}\", {exceptionSyntax});";
+            else loggingSyntax =  string.IsNullOrEmpty(exceptionSyntax)
+                ? $"{FieldName}.{LogMethodName(level)}({message});"
+                : $"{FieldName}.{LogMethodName(level)}({message}, {exceptionSyntax});";
+
+            return loggingSyntax;
         }
 
         /// <summary>
@@ -41,7 +48,7 @@ namespace CodeFactory.ADK.NDF
         /// <returns>The formatted logging string.</returns>
         public new string InjectEnterLoggingSyntax(LogLevel level, string memberName = null)
         {
-            return $"{FieldName}.EnterLog({level});";
+            return $"{FieldName}.EnterLog(LogLevel.{level});";
         }
 
         /// <summary>
@@ -52,7 +59,7 @@ namespace CodeFactory.ADK.NDF
         /// <returns>The formatted logging string.</returns>
         public new string InjectExitLoggingSyntax(LogLevel level, string memberName = null)
         {
-            return $"{FieldName}.ExitLog({level});";
+            return $"{FieldName}.ExitLog(LogLevel.{level});";
         }
 
     }

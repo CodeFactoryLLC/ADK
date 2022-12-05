@@ -60,9 +60,10 @@ namespace CodeFactory.ADK
         /// </summary>
         /// <param name="level">The logging level for the logger syntax.</param>
         /// <param name="message">the target message for logging.</param>
+        /// <param name="isFormattedMessage">optional parameter that determines if the string uses a $ formatted string for the message.</param>
         /// <param name="exceptionSyntax">Optional parameter to pass the exception field name to be included with the logging.</param>
         /// <returns>The formatted logging syntax to be injected. If no message is provided will return null.</returns>
-        string InjectLoggingSyntax(LogLevel level, string message, string exceptionSyntax = null);
+        string InjectLoggingSyntax(LogLevel level, string message, bool isFormattedMessage = false, string exceptionSyntax = null);
 
 
         /// <summary>

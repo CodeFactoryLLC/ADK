@@ -123,15 +123,22 @@ namespace CodeFactory.ADK
         /// </summary>
         /// <param name="level">The logging level for the logger syntax.</param>
         /// <param name="message">the target message for logging.</param>
+        /// <param name="isFormattedMessage">optional parameter that determines if the string uses a $ formatted string for the message with double quotes in the formatted output.</param>
         /// <param name="exceptionSyntax">Optional parameter to pass the exception field name to be included with the logging.</param>
         /// <returns>The formatted logging syntax to be injected. If no message is provided will return null.</returns>
-        public string InjectLoggingSyntax(LogLevel level, string message, string exceptionSyntax = null)
+        public string InjectLoggingSyntax(LogLevel level, string message, bool isFormattedMessage = false, string exceptionSyntax = null)
         {
             if (string.IsNullOrEmpty(message)) return null;
 
-            return string.IsNullOrEmpty(exceptionSyntax)
+            string loggingSyntax = null;
+            if(!isFormattedMessage) loggingSyntax =  string.IsNullOrEmpty(exceptionSyntax)
                 ? $"{_fieldName}.{LogMethodName(level)}(\"{message}\");"
                 : $"{_fieldName}.{LogMethodName(level)}({exceptionSyntax}, \"{message}\");";
+            else loggingSyntax =  string.IsNullOrEmpty(exceptionSyntax)
+                ? $"{_fieldName}.{LogMethodName(level)}({message});"
+                : $"{_fieldName}.{LogMethodName(level)}({exceptionSyntax}, {message});";
+
+            return loggingSyntax;
         }
 
         /// <summary>
@@ -143,7 +150,7 @@ namespace CodeFactory.ADK
         public string InjectEnterLoggingSyntax(LogLevel level, string memberName = null)
         {
             return !string.IsNullOrEmpty(memberName)
-                ? $"{_fieldName}.{LogMethodName(level)}(\"Entering '{memberName}'\");"
+                ? $"{_fieldName}.{LogMethodName(level)}($\"Exiting '{{nameof({memberName})}}'\");"
                 : $"{_fieldName}.{LogMethodName(level)}(\"Entering 'member'\");";
         }
 
@@ -156,7 +163,7 @@ namespace CodeFactory.ADK
         public string InjectExitLoggingSyntax(LogLevel level, string memberName = null)
         {
             return !string.IsNullOrEmpty(memberName)
-                ? $"{_fieldName}.{LogMethodName(level)}(\"Exiting '{memberName}'\");"
+                ? $"{_fieldName}.{LogMethodName(level)}($\"Exiting '{{nameof({memberName})}}'\");"
                 : $"{_fieldName}.{LogMethodName(level)}(\"Exiting 'member'\");";
         }
     }

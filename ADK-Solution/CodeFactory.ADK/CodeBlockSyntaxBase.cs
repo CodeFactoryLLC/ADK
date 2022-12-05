@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//*****************************************************************************
+//* Automation Delivery Kit
+//* Copyright (c) 2022 CodeFactory, LLC
+//*****************************************************************************
 
 namespace CodeFactory.ADK
 {
@@ -42,8 +41,9 @@ namespace CodeFactory.ADK
         /// <summary>
         /// Generates the syntax for the code block and returns it.
         /// </summary>
+        /// <param name="memberName">Optional parameter that passes the hosting member name for the code block.</param>
         /// <returns>Formatted syntax from the code block.</returns>
-        public abstract string GenerateSyntax();
+        public abstract string GenerateSyntax(string memberName = null);
 
     }
 }

@@ -41,9 +41,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.Fields.Any(f => f.ModelSourceFile == sourceDoc))
+            if (container.Fields.Any(f => f.ModelSourceFile == sourceDoc & f.LoadedFromSource))
             {
-                var fieldData  = container.Fields.First(f => f.ModelSourceFile == sourceDoc);
+                var fieldData  = container.Fields.First(f => f.ModelSourceFile == sourceDoc & f.LoadedFromSource);
 
                 var updatedSource = await fieldData.AddBeforeAsync(syntax);
 
@@ -72,9 +72,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.Fields.Any(f => f.ModelSourceFile == sourceDoc))
+            if (container.Fields.Any(f => f.ModelSourceFile == sourceDoc & f.LoadedFromSource))
             {
-                var fieldData  = container.Fields.Last(f => f.ModelSourceFile == sourceDoc);
+                var fieldData  = container.Fields.Last(f => f.ModelSourceFile == sourceDoc & f.LoadedFromSource);
 
                 var updatedSource = await fieldData.AddAfterAsync(syntax);
 
@@ -103,9 +103,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.Constructors.Any(c => c.ModelSourceFile == sourceDoc))
+            if (container.Constructors.Any(c => c.ModelSourceFile == sourceDoc & c.LoadedFromSource))
             {
-                var constData  = container.Constructors.First(c => c.ModelSourceFile == sourceDoc);
+                var constData  = container.Constructors.First(c => c.ModelSourceFile == sourceDoc & c.LoadedFromSource);
 
                 var updatedSource = await constData.AddBeforeAsync(syntax);
 
@@ -134,9 +134,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.Constructors.Any(c => c.ModelSourceFile == sourceDoc))
+            if (container.Constructors.Any(c => c.ModelSourceFile == sourceDoc & c.LoadedFromSource))
             {
-                var constData  = container.Constructors.Last(c => c.ModelSourceFile == sourceDoc);
+                var constData  = container.Constructors.Last(c => c.ModelSourceFile == sourceDoc & c.LoadedFromSource);
 
                 var updatedSource = await constData.AddAfterAsync(syntax);
 
@@ -165,9 +165,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.Properties.Any(p => p.ModelSourceFile == sourceDoc))
+            if (container.Properties.Any(p => p.ModelSourceFile == sourceDoc & p.LoadedFromSource))
             {
-                var propertyData  = container.Properties.First(p => p.ModelSourceFile == sourceDoc);
+                var propertyData  = container.Properties.First(p => p.ModelSourceFile == sourceDoc & p.LoadedFromSource );
 
                 var updatedSource = await propertyData.AddBeforeAsync(syntax);
 
@@ -196,9 +196,9 @@ namespace CodeFactory.ADK
 
             var sourceDoc = source.SourceDocument;
 
-            if (container.Properties.Any(p => p.ModelSourceFile == sourceDoc))
+            if (container.Properties.Any(p => p.ModelSourceFile == sourceDoc & p.LoadedFromSource))
             {
-                var propertyData  = container.Properties.Last(p => p.ModelSourceFile == sourceDoc);
+                var propertyData  = container.Properties.Last(p => p.ModelSourceFile == sourceDoc & p.LoadedFromSource);
 
                 var updatedSource = await propertyData.AddAfterAsync(syntax);
 

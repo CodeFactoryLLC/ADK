@@ -52,6 +52,20 @@ namespace CodeFactory.ADK
         void UpdateNamespaceManager(NamespaceManager namespaceManager);
 
         /// <summary>
+        /// Loads a new instance of a <see cref="NamespaceManager"/> from the current source and assigns it to the <see cref="NamespaceManager"/> property.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown if either the source is null.</exception>
+        void LoadNamespaceManager();
+
+        /// <summary>
+        /// Creates a new using statement in the source if the using statement does not exist. It will also reload the namespace manager and update it.
+        /// </summary>
+        /// <param name="nameSpace">Namespace to add to the source file.</param>
+        /// <param name="alias">Optional parameter to assign a alias to the using statement.</param>
+        /// <exception cref="ArgumentNullException">Thrown if either the source is null.</exception>
+        Task UsingStatementAddAsync(string nameSpace, string alias = null);
+
+        /// <summary>
         /// Adds the provided syntax to the beginning of the source file.
         /// </summary>
         /// <param name="syntax">Target syntax to be added.</param>

@@ -9,7 +9,7 @@ namespace CodeFactory.ADK.Standard
     /// <summary>
     /// Standard syntax log formatter that implements the <see cref="ILogger"/> interface.
     /// </summary>
-    public class MicrosoftLogger:BaseLoggingFormatter
+    public class MicrosoftLogger:BaseLoggingFormatter,ILoggingFormatter
     {
         /// <summary>
         /// Constructor for the logging implementation.

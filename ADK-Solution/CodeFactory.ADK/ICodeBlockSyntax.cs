@@ -23,7 +23,8 @@ namespace CodeFactory.ADK
         /// <summary>
         /// Generates the syntax for the code block and returns it.
         /// </summary>
+        /// <param name="memberName">Optional parameter that passes the hosting member name for the code block.</param>
         /// <returns>Formatted syntax from the code block.</returns>
-        string GenerateSyntax();
+        string GenerateSyntax(string memberName = null);
     }
 }
