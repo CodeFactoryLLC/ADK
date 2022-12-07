@@ -55,7 +55,7 @@ namespace CodeFactory.ADK
             }
             else
             {
-                await this.UsingStatementsAddAfterAsync(syntax);
+                await this.ContainerAddToBeginningAsync(syntax);
             }
         }
 
@@ -86,7 +86,7 @@ namespace CodeFactory.ADK
             }
             else
             {
-                await this.UsingStatementsAddAfterAsync(syntax);
+                await this.ContainerAddToBeginningAsync(syntax);
             }
         }
 

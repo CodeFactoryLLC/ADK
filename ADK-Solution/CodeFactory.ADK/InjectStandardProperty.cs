@@ -126,22 +126,27 @@ namespace CodeFactory.ADK
                     if (!string.IsNullOrEmpty(docs)) propertyFormatter.AppendCodeBlock(indentLevel, docs);
                 }
 
+                string getStatement = null;
+                string setStatement = null;
+
                 if (propertyType == PropertyGenerationType.PropertyStandard)
                 {
                     propertyFormatter.AppendCodeLine(indentLevel,
-                        $"{propertySecurity} {member.PropertyType.CSharpFormatTypeName(updatedSource.NamespaceManager)} {member.Name}");
+                        $"{propertySecurity.CSharpFormatKeyword()} {member.PropertyType.CSharpFormatTypeName(updatedSource.NamespaceManager)} {member.Name}");
                     propertyFormatter.AppendCodeLine(indentLevel, "{");
 
                     if (hasGet)
                     {
-                        propertyFormatter.AppendCodeLine(indentLevel1,
-                            $"{(propertySecurity != getSecurity ? getSecurity.CSharpFormatKeyword() : null)} get {{return {fieldName}; }}");
+                        getStatement =
+                            $"{(propertySecurity != getSecurity ? getSecurity.CSharpFormatKeyword() : null)} get {{return {fieldName}; }}";
+                        propertyFormatter.AppendCodeLine(indentLevel1, getStatement.Trim());
                     }
 
                     if (hasSet)
                     {
-                        propertyFormatter.AppendCodeLine(indentLevel1,
-                            $"{(propertySecurity != setSecurity ? setSecurity.CSharpFormatKeyword() : null)} set {{{fieldName} = value; }}");
+                        setStatement =
+                            $"{(propertySecurity != setSecurity ? setSecurity.CSharpFormatKeyword() : null)} set {{{fieldName} = value; }}";
+                        propertyFormatter.AppendCodeLine(indentLevel1, setStatement.Trim());
                     }
 
                     propertyFormatter.AppendCodeLine(indentLevel, "}");
@@ -150,36 +155,39 @@ namespace CodeFactory.ADK
                 {
                     if (hasGet & !hasSet)
                     {
-                        propertyFormatter.AppendCodeLine(indentLevel,
-                            $"{(propertySecurity != getSecurity ? getSecurity.CSharpFormatKeyword() : propertySecurity.CSharpFormatKeyword())} {member.PropertyType.CSharpFormatTypeName(updatedSource.NamespaceManager)} {member.Name} => {fieldName};");
+                        getStatement =
+                            $"{(propertySecurity != getSecurity ? getSecurity.CSharpFormatKeyword() : propertySecurity.CSharpFormatKeyword())} {member.PropertyType.CSharpFormatTypeName(updatedSource.NamespaceManager)} {member.Name} => {fieldName};";
+                        propertyFormatter.AppendCodeLine(indentLevel, getStatement);
+                            
                     }
                     else
                     {
                         propertyFormatter.AppendCodeLine(indentLevel,
-                            $"{propertySecurity} {member.PropertyType.CSharpFormatTypeName(updatedSource.NamespaceManager)} {member.Name}");
+                            $"{propertySecurity.CSharpFormatKeyword()} {member.PropertyType.CSharpFormatTypeName(updatedSource.NamespaceManager)} {member.Name}");
                         propertyFormatter.AppendCodeLine(indentLevel, "{");
 
                         if (hasGet)
                         {
-                            propertyFormatter.AppendCodeLine(indentLevel1,
-                                $"{(propertySecurity != getSecurity ? getSecurity.CSharpFormatKeyword() : null)} get => {fieldName};");
+                            getStatement =
+                                $"{(propertySecurity != getSecurity ? getSecurity.CSharpFormatKeyword() : null)} get => {fieldName};";
+                            propertyFormatter.AppendCodeLine(indentLevel1, getStatement.Trim());
                         }
 
                         if (hasSet)
                         {
-                            propertyFormatter.AppendCodeLine(indentLevel1,
-                                $"{(propertySecurity != setSecurity ? setSecurity.CSharpFormatKeyword() : null)} set => {fieldName} = value;");
+                            setStatement =
+                                $"{(propertySecurity != setSecurity ? setSecurity.CSharpFormatKeyword() : null)} set => {fieldName} = value;";
+                            propertyFormatter.AppendCodeLine(indentLevel1, setStatement.Trim());
                         }
 
                         propertyFormatter.AppendCodeLine(indentLevel, "}");
                     }
                 }
-
             }
             else
             {
                 propertyFormatter.AppendCodeLine(indentLevel,
-                    $"{propertySecurity} {member.PropertyType.CSharpFormatTypeName(updatedSource.NamespaceManager)} {member.Name} {{ {(hasGet ? $"{(propertySecurity != getSecurity ? getSecurity.CSharpFormatKeyword() : null)} get; " :null)}{(hasSet ? $"{(propertySecurity != setSecurity ? setSecurity.CSharpFormatKeyword() : null)} set; " :null)}}}");
+                    $"{propertySecurity.CSharpFormatKeyword()} {member.PropertyType.CSharpFormatTypeName(updatedSource.NamespaceManager)} {member.Name} {{ {(hasGet ? $"{(propertySecurity != getSecurity ? getSecurity.CSharpFormatKeyword() : null)} get; " :null)}{(hasSet ? $"{(propertySecurity != setSecurity ? setSecurity.CSharpFormatKeyword() : null)} set; " :null)}}}");
             }
 
             await updatedSource.PropertiesAddAfterAsync(propertyFormatter.ReturnSource());

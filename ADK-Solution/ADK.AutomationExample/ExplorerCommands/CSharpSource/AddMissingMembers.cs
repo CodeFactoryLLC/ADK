@@ -1,5 +1,4 @@
-﻿using CodeFactory.Logging;
-using CodeFactory.VisualStudio;
+﻿using CodeFactory.VisualStudio;
 using CodeFactory.VisualStudio.SolutionExplorer;
 using System;
 using System.Collections.Generic;
@@ -10,6 +9,8 @@ using CodeFactory.DotNet.CSharp;
 using CodeFactory.ADK;
 using CodeFactory.ADK.NDF;
 using CodeFactory.ADK.Standard;
+using Microsoft.Extensions.Logging;
+using ILogger = CodeFactory.Logging.ILogger;
 
 namespace ADK.AutomationExample.ExplorerCommands.CSharpSource
 {
@@ -162,6 +163,9 @@ namespace ADK.AutomationExample.ExplorerCommands.CSharpSource
                             new CodeFactory.ADK.Standard.CatchBlockException(logFormatter)
                         });
 
+                InjectStandardProperty<CsClass> injectPropertyAsync =
+                    new InjectStandardProperty<CsClass>(injectFieldSyntax);
+
                 foreach (var missingMember in missingMembers)
                 {
                     switch (missingMember.MemberType)
@@ -177,6 +181,11 @@ namespace ADK.AutomationExample.ExplorerCommands.CSharpSource
 
                             break;
                         case CsMemberType.Property:
+
+                            var propertyMember = missingMember as CsProperty;
+                            classSource = await injectPropertyAsync.InjectSyntaxAsync(classSource, propertyMember, 2,
+                                LogLevel.Information, CsSecurity.Public, PropertyGenerationType.PropertyExpression,
+                                CsSecurity.Unknown, CsSecurity.Unknown, false, true);
                             break;
                     }
                 }
